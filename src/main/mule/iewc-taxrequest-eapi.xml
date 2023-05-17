@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="iewc-taxrequest-eapi-main">
+        <http:listener config-ref="HTTP_Listener_config_eapi" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="initializationOfVariables" doc:id="619215ec-cc73-4ba3-b0a7-94dc514bae55">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="correlationId"><![CDATA[if(!isEmpty(attributes.headers.correlationId)) attributes.headers.correlationId else correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="httpMethod"><![CDATA[attributes.method]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <apikit:router config-ref="iewc-taxrequest-eapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="iewc-taxrequest-eapi-console">
+        <http:listener config-ref="HTTP_Listener_config_eapi" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="iewc-taxrequest-eapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="post:\tax_request:application\json:iewc-taxrequest-eapi-config">
+        <flow-ref doc:name="callToTaxRequestImplFlow" doc:id="52ecb43a-53b4-4984-8521-a0e3dde0023a" name="ImplementationFlow"/>
+    </flow>
+</mule>

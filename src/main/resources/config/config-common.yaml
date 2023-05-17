@@ -1,0 +1,12 @@
+# Common File to be use in All env
+
+milestone:
+  category: "LOG"
+
+
+#logging info
+
+source: "iewc-user"
+target: "taxrequest-papi"
+requestMessage: "Received taxrequest from iewc user"
+responseMessage: "Response sent back to iewc user"
