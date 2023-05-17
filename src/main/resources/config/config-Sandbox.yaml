@@ -1,5 +1,5 @@
 application:
-  name: "sb-iewc-taxrequest"
+  name: "taxrequest-eapi"
 
 
 api:
